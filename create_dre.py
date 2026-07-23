@@ -205,94 +205,100 @@ def main():
     )
 # ── PDF ───────────────────────────────────────────────────────────────────────
 def gerar_pdf(dados: dict) -> BytesIO:
-    """Gera o PDF da DRE usando fpdf2"""
+    """Gera o PDF da DRE usando fpdf2 - versão compatível com Streamlit Cloud"""
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
+    
+    # Usa fonte core que aceita latin-1 sem quebrar
+    pdf.set_font("Helvetica", size=12)
+
+    # Função auxiliar pra limpar acentos e evitar erro de encode
+    def clean(text):
+        return text.encode('latin-1', 'replace').decode('latin-1')
 
     # Título
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "DEMONSTRACAO DO RESULTADO DO EXERCICIO - DRE", ln=True, align='C')
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.cell(0, 10, clean("DEMONSTRACAO DO RESULTADO DO EXERCICIO - DRE"), ln=True, align='C')
     pdf.ln(5)
     
     # Identificação
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, f"Empresa: {dados['empresa']}", ln=True)
-    pdf.set_font("Arial", size=11)
-    pdf.cell(0, 6, f"CNPJ: {dados['cnpj']}", ln=True)
-    pdf.cell(0, 6, f"Periodo: {dados['periodo']}", ln=True)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, clean(f"Empresa: {dados['empresa']}"), ln=True)
+    pdf.set_font("Helvetica", size=11)
+    pdf.cell(0, 6, clean(f"CNPJ: {dados['cnpj']}"), ln=True)
+    pdf.cell(0, 6, clean(f"Periodo: {dados['periodo']}"), ln=True)
     if dados['responsavel']:
-        pdf.cell(0, 6, f"Responsavel: {dados['responsavel']}", ln=True)
+        pdf.cell(0, 6, clean(f"Responsavel: {dados['responsavel']}"), ln=True)
     pdf.ln(5)
 
     # Função auxiliar pra linha
     def linha(desc, valor):
-        pdf.cell(140, 6, desc, border=0)
+        pdf.cell(140, 6, clean(desc), border=0)
         pdf.cell(50, 6, f"R$ {fmt_brl(valor)}", border=0, align='R', ln=True)
 
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, "1. RECEITA BRUTA", ln=True)
-    pdf.set_font("Arial", size=11)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, clean("1. RECEITA BRUTA"), ln=True)
+    pdf.set_font("Helvetica", size=11)
     linha("Receita Bruta", dados['receita_bruta'])
     linha("(-) IPI", -dados['ipi'])
     linha("(-) ICMS-ST", -dados['icms_st'])
     linha("(-) PIS", -dados['pis'])
     linha("(-) COFINS", -dados['cofins'])
-    pdf.set_font("Arial", "B", 11)
+    pdf.set_font("Helvetica", "B", 11)
     linha("= FATURAMENTO BRUTO", dados['faturamento_bruto'])
     pdf.ln(3)
 
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, "2. DEDUCOES", ln=True)
-    pdf.set_font("Arial", size=11)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, clean("2. DEDUCOES"), ln=True)
+    pdf.set_font("Helvetica", size=11)
     linha("Descontos", -dados['descontos'])
     linha("Vendas canceladas", -dados['vendas_canceladas'])
     linha("Devolucoes", -dados['devolucoes'])
-    pdf.set_font("Arial", "B", 11)
+    pdf.set_font("Helvetica", "B", 11)
     linha("= LUCRO BRUTO", dados['lucro_bruto'])
     pdf.ln(3)
 
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, "3. DESPESAS OPERACIONAIS", ln=True)
-    pdf.set_font("Arial", size=11)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, clean("3. DESPESAS OPERACIONAIS"), ln=True)
+    pdf.set_font("Helvetica", size=11)
     linha("Despesas Admin", -dados['desp_admin'])
     linha("Despesas Vendas", -dados['desp_vendas'])
     linha("Outras Despesas Op", -dados['desp_outras_op'])
-    pdf.set_font("Arial", "B", 11)
+    pdf.set_font("Helvetica", "B", 11)
     linha("= RESULTADO OPERACIONAL", dados['resultado_operacional'])
     pdf.ln(3)
 
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, "4. RESULTADO NAO OPERACIONAL", ln=True)
-    pdf.set_font("Arial", size=11)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, clean("4. RESULTADO NAO OPERACIONAL"), ln=True)
+    pdf.set_font("Helvetica", size=11)
     linha("Receitas/Despesas Fin", dados['rec_desp_fin'])
     linha("Outras Rec/Desp", dados['outras_rec_desp'])
-    pdf.set_font("Arial", "B", 11)
+    pdf.set_font("Helvetica", "B", 11)
     linha("= RESULTADO ANTES IR/CSLL", dados['resultado_antes_ir'])
     pdf.ln(3)
 
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, "5. PROVISOES", ln=True)
-    pdf.set_font("Arial", size=11)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, clean("5. PROVISOES"), ln=True)
+    pdf.set_font("Helvetica", size=11)
     linha("Provisao IR", -dados['prov_ir'])
     linha("Provisao CSLL", -dados['prov_csll'])
     pdf.ln(3)
 
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, "6. PARTICIPACOES", ln=True)
-    pdf.set_font("Arial", size=11)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, clean("6. PARTICIPACOES"), ln=True)
+    pdf.set_font("Helvetica", size=11)
     linha("Debenturistas", -dados['part_debenturistas'])
     linha("Empregados", -dados['part_empregados'])
     linha("Administradores", -dados['part_administradores'])
     linha("Governo", -dados['part_governo'])
     pdf.ln(5)
 
-    pdf.set_font("Arial", "B", 14)
+    pdf.set_font("Helvetica", "B", 14)
     pdf.cell(0, 10, f"LUCRO LIQUIDO: R$ {fmt_brl(dados['lucro_liquido'])}", ln=True, align='C')
 
-    # Retorna como BytesIO
-    pdf_bytes = pdf.output(dest='S').encode('latin-1')
+    # CORREÇÃO PRINCIPAL AQUI: gera direto em bytes
+    pdf_bytes = pdf.output()
     return BytesIO(pdf_bytes)
-# -------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------
 if __name__ == "__main__":
     main()
