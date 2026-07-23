@@ -2,12 +2,12 @@ import streamlit as st
 from fpdf import FPDF # usa fpdf2
 from io import BytesIO
 from datetime import date
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+#from reportlab.lib.pagesizes import A4
+#from reportlab.lib import colors
+#from reportlab.lib.units import cm
+#from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+#from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+#from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -32,9 +32,8 @@ def num_input(label: str, key: str, help_text: str = "") -> float:
     )
     return float(val)
 
-
 # ── PDF ───────────────────────────────────────────────────────────────────────
-
+'''
 def gerar_pdf(dados: dict) -> bytes:
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -234,7 +233,7 @@ def gerar_pdf(dados: dict) -> bytes:
 
     doc.build(story)
     return buffer.getvalue()
-
+'''
 
 # ── Layout Principal ──────────────────────────────────────────────────────────
 
@@ -414,7 +413,32 @@ def main():
         "Desenvolvido como ferramenta de apoio. "
         "Consulte sempre um contador habilitado para validações legais."
     )
-
+# ── PDF ───────────────────────────────────────────────────────────────────────
+if st.button("Gerar PDF do DRE"):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Config pra aceitar acentos
+    pdf.set_font("Arial", size=12)
+    
+    # Título
+    pdf.cell(200, 10, txt="Demonstração do Resultado do Exercício - DRE", ln=True, align='C')
+    pdf.ln(10)
+    
+    # Exemplo: você pode pegar dados do seu app e jogar aqui
+    # pdf.cell(200, 10, txt=f"Receita Bruta: R$ {receita}", ln=True)
+    
+    pdf.cell(200, 10, txt="Este é um exemplo de DRE gerado pelo sistema", ln=True)
+    
+    # Gera o PDF em memória
+    pdf_output = pdf.output(dest='S').encode('latin-1')
+    
+    st.download_button(
+        label="Baixar PDF",
+        data=pdf_output,
+        file_name="DRE.pdf",
+        mime="application/pdf"
+    )
 
 if __name__ == "__main__":
     main()
