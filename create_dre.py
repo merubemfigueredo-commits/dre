@@ -33,7 +33,7 @@ def num_input(label: str, key: str, help_text: str = "") -> float:
     return float(val)
 
 # ── PDF ───────────────────────────────────────────────────────────────────────
-'''
+"""
 def gerar_pdf(dados: dict) -> bytes:
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -233,7 +233,7 @@ def gerar_pdf(dados: dict) -> bytes:
 
     doc.build(story)
     return buffer.getvalue()
-'''
+"""
 
 # ── Layout Principal ──────────────────────────────────────────────────────────
 
